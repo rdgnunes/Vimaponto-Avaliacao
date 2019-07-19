@@ -27,8 +27,8 @@ namespace VimapontoTest.Controller.Services
             if (String.IsNullOrEmpty(pCliente.Morada))
                 return "Morada Vazia";
 
-            if (String.IsNullOrEmpty(pCliente.Contatos))
-                return "Contatos Vazio";
+            if (String.IsNullOrEmpty(pCliente.Contato))
+                return "Contato Vazio";
 
             new ClienteData().Inserir(pCliente);
             return "Cliente cadastrado com sucesso!";
@@ -36,7 +36,7 @@ namespace VimapontoTest.Controller.Services
 
         public String Alterar(Cliente pCliente)
         {
-            if (pCliente.ClienteId != 0)
+            if (pCliente.ClienteId == 0)
                 return "Id Inválido";
 
             new ClienteData().Alterar(pCliente);
@@ -45,7 +45,7 @@ namespace VimapontoTest.Controller.Services
 
         public String Deletar(Cliente pCliente)
         {
-            if (pCliente.ClienteId != 0)
+            if (pCliente.ClienteId == 0)
                 return "Id Inválido";
 
             new ClienteData().Excluir(pCliente);

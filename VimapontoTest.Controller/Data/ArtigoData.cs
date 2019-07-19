@@ -13,13 +13,16 @@ namespace VimapontoTest.Controller.Data
     {
         public List<Artigo> ListarTodos()
         {
-            var oArtigos = new List<Artigo>();
-            sQuery = "SELECT ArtigoId, Codigo, Descricao, Valor " +
-                     "FROM Artigo ";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Artigo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = "SELECT ArtigoId, Codigo, Descricao, Valor " +
+                                  "FROM Artigo";
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Artigo");
+            }
 
-            DataTable dtTable = dsGlobal.Tables[0];
+            dtTable = dsGlobal.Tables["Artigo"];
+            var oArtigos = new List<Artigo>();
             for (int i = 0; i < dtTable.Rows.Count; i++)
             {
                 Artigo oArtigo = new Artigo();
@@ -34,13 +37,16 @@ namespace VimapontoTest.Controller.Data
 
         public Artigo CarregarPorId(int pArtigoId)
         {
-            sQuery = "SELECT ArtigoId, Codigo, Descricao, Valor " +
-                     "FROM Artigo " +
-                     "WHERE ArtigoId = '" + pArtigoId.ToString() + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Artigo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("SELECT ArtigoId, Codigo, Descricao, Valor " +
+                                                "FROM Artigo " +
+                                                "WHERE ArtigoId = '{0}'", pArtigoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Artigo");
+            }
 
-            DataTable dtTable = dsGlobal.Tables[0];
+            dtTable = dsGlobal.Tables["Artigo"];
             Artigo oArtigo = new Artigo();
             if (dtTable.Rows.Count > 0)
             {
@@ -54,30 +60,35 @@ namespace VimapontoTest.Controller.Data
 
         public void Inserir(Artigo oArtigo)
         {
-            sQuery = "INSERT INTO Artigo (Codigo, Descricao, Valor) " +
-                     "VALUES ('" + oArtigo.Codigo + "','" + oArtigo.Descricao + "','" + oArtigo.Valor + "')";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Artigo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("INSERT INTO Artigo (Codigo, Descricao, Valor) " +
+                                                "VALUES('{0}', '{1}', '{2}') ", oArtigo.Codigo, oArtigo.Descricao, oArtigo.Valor);
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Artigo");
+            }
         }
 
         public void Alterar(Artigo oArtigo)
         {
-            sQuery = "UPDATE Artigo " +
-                     "SET Codigo = '" + oArtigo.Codigo + "' " +
-                     ", Descricao = '" + oArtigo.Descricao + "' " +
-                     ", Valor = '" + oArtigo.Valor + "' " +
-                     "WHERE ArtigoId = '" + oArtigo.ArtigoId + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Artigo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("UPDATE Artigo SET Codigo = '{0}', Descricao = '{1}', Valor = '{2}' " +
+                                                "WHERE ArtigoId = '{3}' ", oArtigo.Codigo, oArtigo.Descricao, oArtigo.Valor, oArtigo.ArtigoId);
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Artigo");
+            }
         }
 
         public void Excluir(Artigo oArtigo)
         {
-            sQuery = "DELETE Artigo " +
-                     "WHERE ArtigoId = '" + oArtigo.ArtigoId + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Artigo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("DELETE Artigo " +
+                                                "WHERE ArtigoId = '{0}' ", oArtigo.ArtigoId);
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Artigo");
+            }
         }
-
     }
 }

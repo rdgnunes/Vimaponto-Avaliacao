@@ -11,6 +11,6 @@ namespace VimapontoTest.Model
         public int ClienteId { get; set; }
         public String Nome { get; set; }
         public String Morada { get; set; }
-        public String Contatos { get; set; }
+        public String Contato { get; set; }
     }
 }

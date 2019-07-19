@@ -13,37 +13,42 @@ namespace VimapontoTest.Controller.Data
     {
         public List<Item> ListarTodosPorDocumento(Documento pDocumento)
         {
-            var oItems = new List<Item>();
-            sQuery = "SELECT DocumentoId, ArtigoId, Quantidade, DataEntrega, Valor " +
-                     "FROM Item " +
-                     "WHERE DocumentoId = '" + pDocumento.DocumentoId.ToString() + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Item");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("SELECT DocumentoId, ArtigoId, Quantidade, DataEntrega, Valor, Ordem FROM Item " +
+                                                "WHERE DocumentoId = '{0}' ORDER BY Ordem", pDocumento.DocumentoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Item");
+            }
 
-            DataTable dtTable = dsGlobal.Tables[0];
+            dtTable = dsGlobal.Tables["Item"];
+            var oItems = new List<Item>();
             for (int i = 0; i < dtTable.Rows.Count; i++)
             {
-                Item oItem = new Item(pDocumento, new Artigo());                
-                oItem.ObjDocumento = new DocumentoData().CarregarPorId(int.Parse(dtTable.Rows[i]["DocumentoId"].ToString()));
+                Item oItem = new Item(pDocumento, new Artigo());
+                oItem.ObjDocumento = pDocumento;
                 oItem.ObjArtigo = new ArtigoData().CarregarPorId(int.Parse(dtTable.Rows[i]["ArtigoId"].ToString()));
                 oItem.Quantidade = int.Parse(dtTable.Rows[i]["Quantidade"].ToString());
                 oItem.DataEntrega = DateTime.Parse(dtTable.Rows[i]["DataEntrega"].ToString());
                 oItem.Valor = double.Parse(dtTable.Rows[i]["Valor"].ToString());
+                oItem.Ordem = int.Parse(dtTable.Rows[i]["Ordem"].ToString());
                 oItems.Add(oItem);
             }
             return oItems;
         }
-        
+
         public Item CarregarPorId(int pDocumentoId, int pArtigoId)
         {
-            sQuery = "SELECT DocumentoId, ArtigoId, Quantidade, DataEntrega, Valor " +
-                     "FROM Item " +
-                     "WHERE pDocumentoId = '" + pDocumentoId.ToString() + "'" +
-                     "AND   pArtigoId = '" + pArtigoId.ToString() + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Item");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("SELECT DocumentoId, ArtigoId, Quantidade, DataEntrega, Valor, Ordem " +
+                                                "FROM Item " +
+                                                "WHERE pDocumentoId = '{0}' AND pArtigoId = '{1}'", pDocumentoId.ToString(), pArtigoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Item");
+            }
 
-            DataTable dtTable = dsGlobal.Tables[0];
+            dtTable = dsGlobal.Tables["Item"];
             Item oItem = new Item(new Documento(new Tipo(), new Cliente()), new Artigo());
 
             if (dtTable.Rows.Count > 0)
@@ -53,39 +58,66 @@ namespace VimapontoTest.Controller.Data
                 oItem.Quantidade = int.Parse(dtTable.Rows[0]["Quantidade"].ToString());
                 oItem.DataEntrega = DateTime.Parse(dtTable.Rows[0]["DataEntrega"].ToString());
                 oItem.Valor = double.Parse(dtTable.Rows[0]["Valor"].ToString());
+                oItem.Ordem = int.Parse(dtTable.Rows[0]["Ordem"].ToString());
             }
             return oItem;
         }
 
         public void Inserir(Item oItem)
         {
-            sQuery = "INSERT INTO Item (DocumentoId, ArtigoId, Quantidade, DataEntrega, Valor) " +
-                     "VALUES ('" + oItem.ObjDocumento.DocumentoId.ToString() + "', '" + oItem.ObjArtigo.ArtigoId.ToString() + "', " +
-                              "'" + oItem.Quantidade + "', '" + oItem.DataEntrega.ToString(formatoDataBD) + "', '" + oItem.Valor.ToString() + "')";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Item");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("INSERT INTO Item (DocumentoId, ArtigoId, Quantidade, DataEntrega, Valor, Ordem) " +
+                                                "VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}') ", 
+                                                oItem.ObjDocumento.DocumentoId.ToString(), 
+                                                oItem.ObjArtigo.ArtigoId.ToString(),
+                                                oItem.Quantidade, 
+                                                oItem.DataEntrega.ToString(formatoDataBD), 
+                                                oItem.Valor.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Item");
+            }
         }
 
         public void Alterar(Item oItem)
         {
-            sQuery = "UPDATE Item " +
-                     "SET Quantidade = '" + oItem.Quantidade.ToString() + "' " +
-                     ", DataEntrega = '" + oItem.DataEntrega.ToString(formatoDataBD) + "' " +
-                     ", Valor = '" + oItem.Valor + "' " +
-                     "WHERE DocumentoId = '" + oItem.ObjDocumento.DocumentoId.ToString() + "'" +
-                     "AND   ArtigoId = '" + oItem.ObjArtigo.ArtigoId.ToString() + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Item");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("UPDATE Item SET Quantidade = '{0}', DataEntrega = '{1}', Valor = '{2}', Ordem = '{3}' " +
+                                                "WHERE DocumentoId = '{4}' AND ArtigoId = '{5}' ",
+                                                oItem.Quantidade.ToString(),
+                                                oItem.DataEntrega.ToString(formatoDataBD),
+                                                oItem.Valor,
+                                                oItem.Ordem,
+                                                oItem.ObjDocumento.DocumentoId.ToString(),
+                                                oItem.ObjArtigo.ArtigoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Item");
+            }
         }
 
         public void Excluir(Item oItem)
         {
-            sQuery = "DELETE Item " +
-                     "WHERE DocumentoId = '" + oItem.ObjDocumento.DocumentoId.ToString() + "'" +
-                     "AND   ArtigoId = '" + oItem.ObjArtigo.ArtigoId.ToString() + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Item");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("DELETE Item " +
+                                                "WHERE DocumentoId = '{0}' AND ArtigoId = '{1}'", 
+                                                oItem.ObjDocumento.DocumentoId.ToString(),
+                                                oItem.ObjArtigo.ArtigoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Item");
+            }
         }
 
+        public void ExcluirTodosPorDocumento(Documento pDocumento)
+        {
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("DELETE Item " +
+                                                "WHERE DocumentoId = '{0}' ", pDocumento.DocumentoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Item");
+            }
+        }
     }
 }

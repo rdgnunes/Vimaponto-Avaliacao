@@ -13,6 +13,7 @@ namespace VimapontoTest.Model
         public int Quantidade { get; set; }
         public DateTime DataEntrega { get; set; }
         public Double Valor { get; set; }
+        public int Ordem { get; set; }
 
         public Item(Documento oDocumento, Artigo oArtigo) {
             ObjDocumento = oDocumento;

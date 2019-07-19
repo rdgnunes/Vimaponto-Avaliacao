@@ -30,7 +30,7 @@ namespace VimapontoTest.Controller.Services
 
         public String Alterar(Tipo pTipo)
         {
-            if (pTipo.TipoId != 0)
+            if (pTipo.TipoId == 0)
                 return "Id Inválido";
 
             new TipoData().Alterar(pTipo);
@@ -39,7 +39,7 @@ namespace VimapontoTest.Controller.Services
 
         public String Deletar(Tipo pTipo)
         {
-            if (pTipo.TipoId != 0)
+            if (pTipo.TipoId == 0)
                 return "Id Inválido";
 
             new TipoData().Excluir(pTipo);

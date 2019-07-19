@@ -13,13 +13,16 @@ namespace VimapontoTest.Controller.Data
     {
         public List<Tipo> ListarTodos()
         {
-            var oTipos = new List<Tipo>();
-            sQuery = "SELECT TipoId, Descricao " +
-                     "FROM Tipo ";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Tipo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = "SELECT TipoId, Descricao " +
+                                  "FROM Tipo ";
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Tipo");
+            }
 
-            DataTable dtTable = dsGlobal.Tables[0];
+            dtTable = dsGlobal.Tables["Tipo"];
+            var oTipos = new List<Tipo>();
             for (int i = 0; i < dtTable.Rows.Count; i++)
             {
                 Tipo oTipo = new Tipo();
@@ -32,13 +35,16 @@ namespace VimapontoTest.Controller.Data
 
         public Tipo CarregarPorId(int pTipoId)
         {
-            sQuery = "SELECT TipoId, Descricao " +
-                     "FROM Tipo " +
-                     "WHERE TipoId = '" + pTipoId.ToString() + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Tipo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("SELECT TipoId, Descricao " +
+                                                "FROM Tipo " +
+                                                "WHERE TipoId = '{0}'", pTipoId.ToString());
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Tipo");
+            }
 
-            DataTable dtTable = dsGlobal.Tables[0];
+            dtTable = dsGlobal.Tables["Tipo"];
             Tipo oTipo = new Tipo();
             if (dtTable.Rows.Count > 0)
             {
@@ -50,28 +56,35 @@ namespace VimapontoTest.Controller.Data
 
         public void Inserir(Tipo oTipo)
         {
-            sQuery = "INSERT INTO Tipo (Descricao) " +
-                     "VALUES ('" + oTipo.Descricao + "')";
-
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Tipo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("INSERT INTO Tipo (Descricao) " +
+                                                "VALUES('{0}'",  oTipo.Descricao);
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Tipo");
+            }
         }
 
         public void Alterar(Tipo oTipo)
         {
-            sQuery = "UPDATE Tipo " +
-                     "SET Descricao = '" + oTipo.Descricao + "' " +
-                     "WHERE TipoId = '" + oTipo.TipoId + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Tipo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("UPDATE Tipo SET Descricao = '{0}' " +
+                                                "WHERE TipoId = '{1}' ", oTipo.Descricao, oTipo.TipoId);
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Tipo");
+            }
         }
 
         public void Excluir(Tipo oTipo)
         {
-            sQuery = "DELETE Tipo " +
-                     "WHERE TipoId = '" + oTipo.TipoId + "'";
-            SqlDataAdapter adapter = new SqlDataAdapter(sQuery, conn);
-            adapter.Fill(dsGlobal, "Tipo");
+            using (var cmd = DbConnection().CreateCommand())
+            {
+                cmd.CommandText = string.Format("DELETE Tipo " +
+                                                "WHERE TipoId = '{0}' ", oTipo.TipoId);
+                dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
+                dtAdapter.Fill(dsGlobal, "Tipo");
+            }
         }
     }
 }

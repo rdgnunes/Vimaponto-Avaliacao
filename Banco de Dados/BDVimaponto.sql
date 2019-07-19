@@ -111,6 +111,7 @@ CREATE TABLE [dbo].[Item](
 	[Quantidade] [int] NOT NULL,
 	[DataEntrega] [smalldatetime] NOT NULL,
 	[Valor] [float] NOT NULL,
+	[Ordem] [int] NOT NULL,
  CONSTRAINT [PK_Item] PRIMARY KEY CLUSTERED 
 (
 	[DocumentoId] ASC,

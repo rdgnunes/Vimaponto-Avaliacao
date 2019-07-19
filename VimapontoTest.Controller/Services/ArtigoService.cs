@@ -36,7 +36,7 @@ namespace VimapontoTest.Controller.Services
 
         public String Alterar(Artigo pArtigo)
         {
-            if (pArtigo.ArtigoId != 0)
+            if (pArtigo.ArtigoId == 0)
                 return "Id Inválido";
 
             new ArtigoData().Alterar(pArtigo);
@@ -45,7 +45,7 @@ namespace VimapontoTest.Controller.Services
 
         public String Deletar(Artigo pArtigo)
         {
-            if (pArtigo.ArtigoId != 0)
+            if (pArtigo.ArtigoId == 0)
                 return "Id Inválido";
 
             new ArtigoData().Excluir(pArtigo);

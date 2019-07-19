@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,10 +44,6 @@
     <Compile Include="Data\ArtigoData.cs" />
     <Compile Include="Data\ClienteData.cs" />
     <Compile Include="Data\DocumentoData.cs" />
-    <Compile Include="Data\DSVimaponto.cs">
-      <DependentUpon>DSVimaponto.xsd</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Data\DSVimaponto.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

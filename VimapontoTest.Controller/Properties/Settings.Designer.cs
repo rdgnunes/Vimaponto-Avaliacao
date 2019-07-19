@@ -32,5 +32,15 @@ namespace VimapontoTest.Controller.Properties {
                 return ((string)(this["BDVimapontoConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=MASTRO;Initial Catalog=BDVimaponto;Integrated Security=True")]
+        public string BDVimapontoConnectionString1 {
+            get {
+                return ((string)(this["BDVimapontoConnectionString1"]));
+            }
+        }
     }
 }
