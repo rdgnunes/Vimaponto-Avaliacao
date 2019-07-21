@@ -18,7 +18,7 @@ INSERT INTO Artigo VALUES ('ART0002', 'Descrição Artigo 2', 1000.90)
 INSERT INTO Artigo VALUES ('ART0003', 'Descrição Artigo 3', 500)
 INSERT INTO Artigo VALUES ('ART0004', 'Descrição Artigo 4', 550)
 INSERT INTO Artigo VALUES ('ART0005', 'Descrição Artigo 5', 100)
-INSERT INTO Artigo VALUES ('ART0005', 'Descrição Artigo 6', 100.15)
+INSERT INTO Artigo VALUES ('ART0006', 'Descrição Artigo 6', 100.15)
 GO
 
 -- INSERT INTO Documento
@@ -36,15 +36,16 @@ INSERT INTO Item VALUES(2, 3, 5, GETDATE(),0.00,3)
 GO
 
 UPDATE Item
-SET Valor = (a.Quantidade * b.Valor)
+SET Valor = b.Valor
 FROM Item   a,
      Artigo b
 WHERE a.ArtigoId = b.ArtigoId
 
 
+-- TRUNCATE TABLE Item
 
 SELECT * FROM Tipo
 SELECT * FROM Cliente
-SELECT * FROM Artigo
-SELECT * FROM Documento
 SELECT * FROM Item
+SELECT * FROM Documento
+SELECT * FROM Artigo

@@ -4,34 +4,38 @@ Imports VimapontoTest.Controller.Services
 Public Class DocumentoInc
 
     Private oDocumento As New Documento(New Tipo(), New Cliente())
+    Private flNovo As Boolean = False
 
-    Private Sub DocumentoInc_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Try
-            CarregarComboTipo()
-            CarregarComboCliente()
+    Public Sub New()
 
-            lvArtigos.View = System.Windows.Forms.View.Details
-            lvArtigos.LabelEdit = False
-            lvArtigos.AllowColumnReorder = True
-            lvArtigos.FullRowSelect = True
-            lvArtigos.GridLines = True
+        ' This call is required by the designer.
+        InitializeComponent()
 
-            lvArtigos.Columns.Add("#", 20, HorizontalAlignment.Left)
-            lvArtigos.Columns.Add("Artigo", 100, HorizontalAlignment.Left)
-            lvArtigos.Columns.Add("Descrição", 350, HorizontalAlignment.Left)
-            lvArtigos.Columns.Add("Entrega", 150, HorizontalAlignment.Left)
-            lvArtigos.Columns.Add("Preço Unit.", 100, HorizontalAlignment.Left)
-            lvArtigos.Columns.Add("Quantidade", 100, HorizontalAlignment.Left)
-            lvArtigos.Columns.Add("Total", 100, HorizontalAlignment.Left)
+        ' Add any initialization after the InitializeComponent() call.
+        CarregarComboTipo()
+        CarregarComboCliente()
 
-            txtDocumentoId.Text = 1
-            CarregarDocumento(txtDocumentoId.Text)
-        Catch ex As Exception
-            Throw ex
-        End Try
+        lvArtigos.View = System.Windows.Forms.View.Details
+        lvArtigos.LabelEdit = False
+        lvArtigos.AllowColumnReorder = True
+        lvArtigos.FullRowSelect = True
+        lvArtigos.GridLines = True
+
+        lvArtigos.Columns.Add("#", 20, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("Artigo", 100, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("Descrição", 350, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("Entrega", 150, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("Preço Unit.", 100, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("Quantidade", 100, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("Total", 100, HorizontalAlignment.Left)
+        lvArtigos.Columns.Add("ArtigoId", 0, HorizontalAlignment.Left)
+
+        txtDocumentoId.Text = 1
+        CarregarDocumento(txtDocumentoId.Text)
+
     End Sub
 
-    Private Sub LimparCampos()
+    Private Sub LimparForm()
         CarregarDocumento(Nothing)
 
         'DOCUMENTO
@@ -79,25 +83,61 @@ Public Class DocumentoInc
             lvi.SubItems.Add(oDocumento.Itens(i).ObjArtigo.Codigo)
             lvi.SubItems.Add(oDocumento.Itens(i).ObjArtigo.Descricao)
             lvi.SubItems.Add(oDocumento.Itens(i).DataEntrega.ToString("dd/MM/yyyy"))
-
-            Dim PrecoUnit As String = "0"
-            If oDocumento.Itens(i).Quantidade > 0 Then
-                PrecoUnit = (oDocumento.Itens(i).Valor / oDocumento.Itens(i).Quantidade)
-            End If
-
-            lvi.SubItems.Add(PrecoUnit)
+            lvi.SubItems.Add(oDocumento.Itens(i).Valor.ToString("F"))
             lvi.SubItems.Add(oDocumento.Itens(i).Quantidade.ToString)
-            lvi.SubItems.Add(oDocumento.Itens(i).Valor.ToString)
 
+            Dim Total As String = "0,00"
+            If oDocumento.Itens(i).Quantidade > 0 Then
+                Total = (oDocumento.Itens(i).Valor * oDocumento.Itens(i).Quantidade).ToString("F")
+            End If
+            lvi.SubItems.Add(Total)
+            lvi.SubItems.Add(oDocumento.Itens(i).ObjArtigo.ArtigoId.ToString)
             lvArtigos.Items.Add(lvi)
         Next
+
+        AjustarTotalEIndex()
         butNovoArtigo.Enabled = True
+    End Sub
+
+    Public Sub AjustarTotalEIndex()
+        If lvArtigos.Items.Count = 0 Then
+            Exit Sub
+        End If
+
+        If lvArtigos.Items(lvArtigos.Items.Count - 1).SubItems(0).Text = "" Then
+            lvArtigos.Items.RemoveAt(lvArtigos.Items.Count - 1)
+        End If
+
+        Dim QtdTotal As Integer = 0
+        Dim VlrTotal As Double = 0
+        For i As Integer = 0 To lvArtigos.Items.Count - 1
+            lvArtigos.Items(i).SubItems(0).Text = i + 1
+            If Not String.IsNullOrEmpty(lvArtigos.Items(i).SubItems(5).Text) Then
+                QtdTotal += CInt(lvArtigos.Items(i).SubItems(5).Text)
+            End If
+
+            If Not String.IsNullOrEmpty(lvArtigos.Items(i).SubItems(6).Text) Then
+                VlrTotal += CDbl(lvArtigos.Items(i).SubItems(6).Text)
+            End If
+        Next
+
+        Dim lvi As New ListViewItem()
+        lvi.SubItems.Add("")
+        lvi.SubItems.Add("")
+        lvi.SubItems.Add("")
+        lvi.SubItems.Add("")
+        lvi.SubItems.Add(QtdTotal)
+        lvi.SubItems.Add(VlrTotal)
+        lvArtigos.Items.Add(lvi)
     End Sub
 
     Private Sub CarregarDocumento(ByVal DocumentId As String)
         Try
             If String.IsNullOrEmpty(DocumentId) Then
-                oDocumento = Nothing
+                oDocumento = New Documento(New Tipo(), New Cliente())
+                oDocumento.Itens = New List(Of Item)
+
+                btnGravar.Enabled = False
                 Exit Sub
             End If
 
@@ -115,6 +155,8 @@ Public Class DocumentoInc
 
             'ARTIGOS
             CarregarListArtigo()
+
+            btnEliminar.Enabled = True
         Catch ex As Exception
             Throw ex
         End Try
@@ -131,6 +173,30 @@ Public Class DocumentoInc
         End Try
     End Sub
 
+    Private Sub CarregarItensListView(ByVal pDocumento As Documento)
+        oDocumento.Itens.Clear()
+        For i As Integer = 0 To lvArtigos.Items.Count - 1
+            If Not String.IsNullOrEmpty(lvArtigos.Items(i).SubItems(0).Text) Then
+                Dim oArtigo As New Artigo()
+                If Not String.IsNullOrEmpty(lvArtigos.Items(i).SubItems(0).Text) Then
+                    oArtigo = New ArtigoService().CarregarPorId(CInt(lvArtigos.Items(i).SubItems(7).Text))
+                End If
+
+                Dim oItem As New Item(pDocumento, oArtigo)
+                oItem.Ordem = lvArtigos.Items(i).SubItems(0).Text
+
+                If IsDate(lvArtigos.Items(i).SubItems(3).Text) Then
+                    oItem.DataEntrega = DateTime.Parse(lvArtigos.Items(i).SubItems(3).Text)
+                End If
+
+                oItem.Valor = lvArtigos.Items(i).SubItems(4).Text
+                oItem.Quantidade = lvArtigos.Items(i).SubItems(5).Text
+
+                oDocumento.Itens.Add(oItem)
+            End If
+        Next
+    End Sub
+
     Private Sub MoverItemList(ByVal iDirecao As Integer)
         If (lvArtigos.SelectedItems.Count = 0) Then
             Exit Sub
@@ -142,40 +208,7 @@ Public Class DocumentoInc
             lvArtigos.Items.Remove(lvi)
             lvArtigos.Items.Insert(pos, lvi)
         End If
-    End Sub
-
-    Private Sub btnNovo_Click(sender As Object, e As EventArgs) Handles btnNovo.Click
-        LimparCampos()
-        cbTipo.Enabled = True
-        txtDescricaoDoc.Enabled = True
-        cbCliente.Enabled = True
-
-        btnGravar.Enabled = True
-        btnEliminar.Enabled = True
-    End Sub
-
-    Private Sub butApagarArtigo_Click(sender As Object, e As EventArgs) Handles butApagarArtigo.Click
-        If (lvArtigos.SelectedItems.Count = 0) Then
-            Exit Sub
-        End If
-
-        Dim lvi As ListViewItem = lvArtigos.SelectedItems(0)
-        Dim pos As Integer = lvArtigos.Items.IndexOf(lvi) - 1
-        If pos >= 0 Then
-            lvArtigos.Items.Remove(lvi)
-        End If
-
-        'Dim item As New ListViewItem
-        'item = lvArtigos.SelectedItems(0)
-
-        'Dim oItem As New Item(New Documento(New Tipo(), New Cliente()), New Artigo())
-        'oItem = oDocumento.Itens.Find(Function(f) f.Ordem = Convert.ToInt32(item.SubItems(0).Text))
-
-        'MessageBox.Show(New ItemService().Deletar(oItem))
-
-        'oDocumento.Itens = New ItemService().ListarTodosPorDocumento(oDocumento)
-
-        'CarregarListArtigo()
+        AjustarTotalEIndex()
     End Sub
 
     Private Sub lvArtigos_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lvArtigos.SelectedIndexChanged
@@ -190,6 +223,80 @@ Public Class DocumentoInc
         End If
     End Sub
 
+#Region "Buttons"
+
+    Private Sub btnNovo_Click(sender As Object, e As EventArgs) Handles btnNovo.Click
+        LimparForm()
+        cbTipo.Enabled = True
+        txtDescricaoDoc.Enabled = True
+        cbCliente.Enabled = True
+
+        btnGravar.Enabled = True
+        btnEliminar.Enabled = True
+        flNovo = True
+    End Sub
+
+    Private Sub btnGravar_Click(sender As Object, e As EventArgs) Handles btnGravar.Click
+        Dim sMsg As String = ""
+
+        If flNovo Then
+            oDocumento.ObjTipo = New TipoService().CarregarPorId(CInt(cbTipo.SelectedValue))
+            oDocumento.ObjCliente = New ClienteService().CarregarPorId(CInt(cbCliente.SelectedValue))
+            oDocumento.DataAlteracao = DateTime.Now
+            oDocumento.Descricao = txtDescricaoDoc.Text
+            CarregarItensListView(oDocumento)
+
+            sMsg = New DocumentoService().Inserir(oDocumento)
+        Else
+            oDocumento.DataAlteracao = DateTime.Now
+            CarregarItensListView(New DocumentoService().CarregarPorId(CInt(txtDocumentoId.Text)))
+
+            sMsg = New DocumentoService().Alterar(oDocumento)
+        End If
+        MessageBox.Show(sMsg)
+        LimparForm()
+
+    End Sub
+
+    Private Sub btnEliminar_Click(sender As Object, e As EventArgs) Handles btnEliminar.Click
+        Dim sMsg As String = ""
+        sMsg = New DocumentoService().Deletar(oDocumento)
+        MessageBox.Show(sMsg)
+        LimparForm()
+    End Sub
+
+    Private Sub btnSair_Click(sender As Object, e As EventArgs) Handles btnSair.Click
+        Me.Close()
+    End Sub
+
+    Private Sub butNovoArtigo_Click(sender As Object, e As EventArgs) Handles butNovoArtigo.Click
+        Using ArtigoInc As New ArtigoInc()
+            ArtigoInc.ParamDocumento = oDocumento
+
+            Dim oItem As New Item(New Documento(New Tipo(), New Cliente()), New Artigo())
+            ArtigoInc.ShowDialog()
+            oItem = ArtigoInc.ParamItem
+
+            If oItem.Valor > 0 Then
+                oDocumento.Itens.Add(oItem)
+                CarregarListArtigo()
+            End If
+        End Using
+
+    End Sub
+
+    Private Sub butApagarArtigo_Click(sender As Object, e As EventArgs) Handles butApagarArtigo.Click
+        If (lvArtigos.SelectedItems.Count = 0) Then
+            Exit Sub
+        End If
+
+        Dim lvi As ListViewItem = lvArtigos.SelectedItems(0)
+        lvArtigos.Items.Remove(lvi)
+
+        CarregarItensListView(oDocumento)
+        AjustarTotalEIndex()
+    End Sub
+
     Private Sub butCima_Click(sender As Object, e As EventArgs) Handles butCima.Click
         MoverItemList(-1)
     End Sub
@@ -197,4 +304,7 @@ Public Class DocumentoInc
     Private Sub butBaixo_Click(sender As Object, e As EventArgs) Handles butBaixo.Click
         MoverItemList(1)
     End Sub
+
+#End Region
+
 End Class

@@ -71,6 +71,12 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArtigoInc.Designer.vb">
+      <DependentUpon>ArtigoInc.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ArtigoInc.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DocumentoInc.Designer.vb">
       <DependentUpon>DocumentoInc.vb</DependentUpon>
     </Compile>
@@ -94,6 +100,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ArtigoInc.resx">
+      <DependentUpon>ArtigoInc.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DocumentoInc.resx">
       <DependentUpon>DocumentoInc.vb</DependentUpon>
     </EmbeddedResource>

@@ -29,7 +29,7 @@ namespace VimapontoTest.Controller.Data
                 oArtigo.ArtigoId = int.Parse(dtTable.Rows[i]["ArtigoId"].ToString());
                 oArtigo.Codigo = dtTable.Rows[i]["Codigo"].ToString();
                 oArtigo.Descricao = dtTable.Rows[i]["Descricao"].ToString();
-                oArtigo.Valor = Double.Parse(dtTable.Rows[i]["ArtigoId"].ToString());
+                oArtigo.Valor = Double.Parse(dtTable.Rows[i]["Valor"].ToString());
                 oArtigos.Add(oArtigo);
             }
             return oArtigos;
@@ -53,7 +53,7 @@ namespace VimapontoTest.Controller.Data
                 oArtigo.ArtigoId = int.Parse(dtTable.Rows[0]["ArtigoId"].ToString());
                 oArtigo.Codigo = dtTable.Rows[0]["Codigo"].ToString();
                 oArtigo.Descricao = dtTable.Rows[0]["Descricao"].ToString();
-                oArtigo.Valor = Double.Parse(dtTable.Rows[0]["ArtigoId"].ToString());
+                oArtigo.Valor = Double.Parse(dtTable.Rows[0]["Valor"].ToString());
             }
             return oArtigo;
         }

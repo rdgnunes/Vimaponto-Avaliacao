@@ -72,8 +72,9 @@ namespace VimapontoTest.Controller.Data
                                                 oItem.ObjDocumento.DocumentoId.ToString(), 
                                                 oItem.ObjArtigo.ArtigoId.ToString(),
                                                 oItem.Quantidade, 
-                                                oItem.DataEntrega.ToString(formatoDataBD), 
-                                                oItem.Valor.ToString());
+                                                oItem.DataEntrega.ToString("yyyyMMdd"), 
+                                                oItem.Valor.ToString().Replace(".","").Replace(",","."),
+                                                oItem.Ordem.ToString());
                 dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
                 dtAdapter.Fill(dsGlobal, "Item");
             }
@@ -109,12 +110,12 @@ namespace VimapontoTest.Controller.Data
             }
         }
 
-        public void ExcluirTodosPorDocumento(Documento pDocumento)
+        public void ExcluirTodosPorDocumentoId(int pDocumentoId)
         {
             using (var cmd = DbConnection().CreateCommand())
             {
                 cmd.CommandText = string.Format("DELETE Item " +
-                                                "WHERE DocumentoId = '{0}' ", pDocumento.DocumentoId.ToString());
+                                                "WHERE DocumentoId = '{0}' ", pDocumentoId.ToString());
                 dtAdapter = new SqlDataAdapter(cmd.CommandText, DbConnection());
                 dtAdapter.Fill(dsGlobal, "Item");
             }

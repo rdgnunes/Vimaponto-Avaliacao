@@ -30,11 +30,7 @@ namespace VimapontoTest.Controller.Services
             Artigo oArtigo = new ArtigoService().CarregarPorId(pItem.ObjArtigo.ArtigoId);
             if (String.IsNullOrEmpty(oArtigo.Codigo))
                 return "Artigo Inválido";
-
-            DateTime dateValue;
-            if (!DateTime.TryParseExact(pItem.DataEntrega.ToString(), "dd/MM/yyyy", new CultureInfo("pt-PT"), DateTimeStyles.None, out dateValue))
-                return "Data de Entrega Inválida";
-
+            
             new ItemData().Inserir(pItem);
             return "Item cadastrado com sucesso!";
         }
@@ -65,6 +61,12 @@ namespace VimapontoTest.Controller.Services
 
             new ItemData().Excluir(pItem);
             return "Item excluido com sucesso!";
+        }
+
+        public String DeletarTodosPorDocumentoId(int pDocumentoId)
+        {
+            new ItemData().ExcluirTodosPorDocumentoId(pDocumentoId);
+            return "Itens excluidos com sucesso!";
         }
     }
 }

@@ -44,6 +44,13 @@ namespace VimapontoTest.Controller.Services
             if (pDocumento.DocumentoId == 0)
                 return "Id Inválido";
 
+            new ItemService().DeletarTodosPorDocumentoId(pDocumento.DocumentoId);
+
+            for (int i = 0; i < pDocumento.Itens.Count ; i++)
+            {
+                new ItemService().Inserir(pDocumento.Itens[i]);
+            }
+
             new DocumentoData().Alterar(pDocumento);
             return "Documento alterado com sucesso!";
         }
@@ -53,7 +60,7 @@ namespace VimapontoTest.Controller.Services
             if (pDocumento.DocumentoId == 0)
                 return "Id Inválido";
 
-            new ItemData().ExcluirTodosPorDocumento(pDocumento);
+            new ItemService().DeletarTodosPorDocumentoId(pDocumento.DocumentoId);
             new DocumentoData().Excluir(pDocumento);
             return "Documento excluido com sucesso!";
         }

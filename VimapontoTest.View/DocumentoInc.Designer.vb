@@ -262,6 +262,7 @@ Partial Class DocumentoInc
         'lvArtigos
         '
         Me.lvArtigos.Location = New System.Drawing.Point(12, 249)
+        Me.lvArtigos.MultiSelect = False
         Me.lvArtigos.Name = "lvArtigos"
         Me.lvArtigos.Size = New System.Drawing.Size(930, 255)
         Me.lvArtigos.TabIndex = 10
