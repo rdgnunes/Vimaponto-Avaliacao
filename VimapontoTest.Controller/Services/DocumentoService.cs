@@ -15,6 +15,11 @@ namespace VimapontoTest.Controller.Services
             return new DocumentoData().ListarTodos();
         }
 
+        public List<Documento> Listar(int? TipoId, int? ClienteId)
+        {
+            return new DocumentoData().Listar(TipoId, ClienteId);
+        }
+
         public Documento CarregarPorId(int pDocumentoId)
         {
             Documento oDocumento = new DocumentoData().CarregarPorId(pDocumentoId);
@@ -35,7 +40,16 @@ namespace VimapontoTest.Controller.Services
             if (String.IsNullOrEmpty(pDocumento.Descricao))
                 return "Descricao Vazia";
 
-            new DocumentoData().Inserir(pDocumento);
+            pDocumento.DocumentoId = new DocumentoData().Inserir(pDocumento);
+
+            if (pDocumento.DocumentoId == 0)
+                return "Id do Documento inválido!";
+
+            for (int i = 0; i < pDocumento.Itens.Count; i++)
+            {
+                pDocumento.Itens[i].ObjDocumento.DocumentoId = pDocumento.DocumentoId;
+                new ItemService().Inserir(pDocumento.Itens[i]);
+            }
             return "Documento cadastrado com sucesso!";
         }
 
@@ -46,7 +60,7 @@ namespace VimapontoTest.Controller.Services
 
             new ItemService().DeletarTodosPorDocumentoId(pDocumento.DocumentoId);
 
-            for (int i = 0; i < pDocumento.Itens.Count ; i++)
+            for (int i = 0; i < pDocumento.Itens.Count; i++)
             {
                 new ItemService().Inserir(pDocumento.Itens[i]);
             }
@@ -63,6 +77,33 @@ namespace VimapontoTest.Controller.Services
             new ItemService().DeletarTodosPorDocumentoId(pDocumento.DocumentoId);
             new DocumentoData().Excluir(pDocumento);
             return "Documento excluido com sucesso!";
+        }
+
+        public List<Relatorio> GetRelatorioDocumento(int pDocumentoId)
+        {
+            var result = new List<Relatorio>();
+            Documento oDocumento = new DocumentoData().CarregarPorId(pDocumentoId);
+            oDocumento.Itens = new ItemService().ListarTodosPorDocumento(oDocumento);
+
+            if (oDocumento.Itens.Count > 0)
+            {
+                Double total = 0;
+                for (int i = 0; i < oDocumento.Itens.Count; i++)
+                {
+                    total = oDocumento.Itens[i].Valor * oDocumento.Itens[i].Quantidade;
+                    result.Add(new Relatorio(oDocumento.DocumentoId, oDocumento.Descricao, oDocumento.DataAlteracao, oDocumento.Itens[i].Ordem,
+                                             oDocumento.Itens[i].ObjArtigo.Descricao, oDocumento.Itens[i].DataEntrega, oDocumento.Itens[i].Valor, oDocumento.Itens[i].Quantidade, total,
+                                             oDocumento.ObjCliente.Nome, oDocumento.ObjCliente.Morada, oDocumento.ObjCliente.Contato));
+                }
+            }
+            else
+            {
+                result.Add(new Relatorio(oDocumento.DocumentoId, oDocumento.Descricao, oDocumento.DataAlteracao, null,
+                                         null, null, null, null, null, oDocumento.ObjCliente.Nome, oDocumento.ObjCliente.Morada, 
+                                         oDocumento.ObjCliente.Contato));
+            }
+
+            return result;
         }
 
     }

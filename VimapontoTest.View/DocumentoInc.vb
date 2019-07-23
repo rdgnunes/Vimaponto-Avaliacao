@@ -5,6 +5,8 @@ Public Class DocumentoInc
 
     Private oDocumento As New Documento(New Tipo(), New Cliente())
     Private flNovo As Boolean = False
+    Private cboCarregada As Boolean = False
+    Private RowTotal As Integer = 0
 
     Public Sub New()
 
@@ -30,9 +32,9 @@ Public Class DocumentoInc
         lvArtigos.Columns.Add("Total", 100, HorizontalAlignment.Left)
         lvArtigos.Columns.Add("ArtigoId", 0, HorizontalAlignment.Left)
 
-        txtDocumentoId.Text = 1
-        CarregarDocumento(txtDocumentoId.Text)
+        btnFiltro.Image = Image.FromFile("C:\\Particular\\VimapontoTest\\img\\filter.bmp")
 
+        CarregarDocumento(txtDocumentoId.Text)
     End Sub
 
     Private Sub LimparForm()
@@ -53,6 +55,8 @@ Public Class DocumentoInc
 
         'ITENS
         lvArtigos.Items.Clear()
+
+        btnRelatorio.Enabled = False
     End Sub
 
     Private Sub CarregarComboTipo()
@@ -73,6 +77,8 @@ Public Class DocumentoInc
         cbCliente.ValueMember = "ClienteId"
         cbCliente.DataSource = Clientes
         cbCliente.SelectedIndex = -1
+
+        cboCarregada = True
     End Sub
 
     Private Sub CarregarListArtigo()
@@ -129,6 +135,8 @@ Public Class DocumentoInc
         lvi.SubItems.Add(QtdTotal)
         lvi.SubItems.Add(VlrTotal)
         lvArtigos.Items.Add(lvi)
+
+        RowTotal = lvArtigos.Items.IndexOf(lvi)
     End Sub
 
     Private Sub CarregarDocumento(ByVal DocumentId As String)
@@ -204,7 +212,7 @@ Public Class DocumentoInc
 
         Dim lvi As ListViewItem = lvArtigos.SelectedItems(0)
         Dim pos As Integer = lvArtigos.Items.IndexOf(lvi) + iDirecao
-        If pos >= 0 Then
+        If pos >= 0 And pos < RowTotal Then
             lvArtigos.Items.Remove(lvi)
             lvArtigos.Items.Insert(pos, lvi)
         End If
@@ -218,7 +226,8 @@ Public Class DocumentoInc
     End Sub
 
     Private Sub cbCliente_SelectedValueChanged(sender As Object, e As EventArgs) Handles cbCliente.SelectedValueChanged
-        If (Not String.IsNullOrEmpty(cbCliente.SelectedValue) And String.IsNullOrEmpty(txtDocumentoId.Text)) Then
+        'If (Not String.IsNullOrEmpty(cbCliente.SelectedValue) And String.IsNullOrEmpty(txtDocumentoId.Text)) Then
+        If (cbCliente.SelectedIndex > -1 And cboCarregada And String.IsNullOrEmpty(txtDocumentoId.Text)) Then
             CarregarCliente(New ClienteService().CarregarPorId(cbCliente.SelectedValue))
         End If
     End Sub
@@ -232,7 +241,8 @@ Public Class DocumentoInc
         cbCliente.Enabled = True
 
         btnGravar.Enabled = True
-        btnEliminar.Enabled = True
+        btnEliminar.Enabled = False
+        btnFiltro.Enabled = True
         flNovo = True
     End Sub
 
@@ -254,8 +264,8 @@ Public Class DocumentoInc
             sMsg = New DocumentoService().Alterar(oDocumento)
         End If
         MessageBox.Show(sMsg)
-        LimparForm()
 
+        btnRelatorio.Enabled = True
     End Sub
 
     Private Sub btnEliminar_Click(sender As Object, e As EventArgs) Handles btnEliminar.Click
@@ -267,6 +277,26 @@ Public Class DocumentoInc
 
     Private Sub btnSair_Click(sender As Object, e As EventArgs) Handles btnSair.Click
         Me.Close()
+    End Sub
+
+    Private Sub btnRelatorio_Click(sender As Object, e As EventArgs) Handles btnRelatorio.Click
+        Using Relatorio As New Relatorio()
+            Relatorio.DocumentoId = txtDocumentoId.Text
+            Relatorio.ShowDialog()
+        End Using
+    End Sub
+
+    Private Sub btnFiltro_Click(sender As Object, e As EventArgs) Handles btnFiltro.Click
+        Using DocumentoLista As New DocumentoLista()
+            DocumentoLista.ShowDialog()
+
+            If DocumentoLista.DocumentoId > 0 Then
+                txtDocumentoId.Text = DocumentoLista.DocumentoId
+                CarregarDocumento(txtDocumentoId.Text)
+                btnGravar.Enabled = True
+                btnRelatorio.Enabled = True
+            End If
+        End Using
     End Sub
 
     Private Sub butNovoArtigo_Click(sender As Object, e As EventArgs) Handles butNovoArtigo.Click
@@ -306,5 +336,4 @@ Public Class DocumentoInc
     End Sub
 
 #End Region
-
 End Class

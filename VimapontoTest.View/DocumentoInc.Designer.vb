@@ -27,6 +27,7 @@ Partial Class DocumentoInc
         Me.btnEliminar = New System.Windows.Forms.Button()
         Me.btnSair = New System.Windows.Forms.Button()
         Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.btnFiltro = New System.Windows.Forms.Button()
         Me.txtHoraAlteracao = New System.Windows.Forms.TextBox()
         Me.txtDataAlteracao = New System.Windows.Forms.TextBox()
         Me.lblAlterado = New System.Windows.Forms.Label()
@@ -45,6 +46,7 @@ Partial Class DocumentoInc
         Me.butCima = New System.Windows.Forms.Button()
         Me.butBaixo = New System.Windows.Forms.Button()
         Me.lvArtigos = New System.Windows.Forms.ListView()
+        Me.btnRelatorio = New System.Windows.Forms.Button()
         Me.Panel1.SuspendLayout()
         Me.Panel2.SuspendLayout()
         Me.SuspendLayout()
@@ -89,6 +91,7 @@ Partial Class DocumentoInc
         'Panel1
         '
         Me.Panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.Panel1.Controls.Add(Me.btnFiltro)
         Me.Panel1.Controls.Add(Me.txtHoraAlteracao)
         Me.Panel1.Controls.Add(Me.txtDataAlteracao)
         Me.Panel1.Controls.Add(Me.lblAlterado)
@@ -100,6 +103,14 @@ Partial Class DocumentoInc
         Me.Panel1.Name = "Panel1"
         Me.Panel1.Size = New System.Drawing.Size(931, 58)
         Me.Panel1.TabIndex = 4
+        '
+        'btnFiltro
+        '
+        Me.btnFiltro.Location = New System.Drawing.Point(628, 16)
+        Me.btnFiltro.Name = "btnFiltro"
+        Me.btnFiltro.Size = New System.Drawing.Size(20, 20)
+        Me.btnFiltro.TabIndex = 7
+        Me.btnFiltro.UseVisualStyleBackColor = True
         '
         'txtHoraAlteracao
         '
@@ -129,7 +140,7 @@ Partial Class DocumentoInc
         'txtDocumentoId
         '
         Me.txtDocumentoId.Enabled = False
-        Me.txtDocumentoId.Location = New System.Drawing.Point(592, 17)
+        Me.txtDocumentoId.Location = New System.Drawing.Point(557, 16)
         Me.txtDocumentoId.Name = "txtDocumentoId"
         Me.txtDocumentoId.Size = New System.Drawing.Size(65, 20)
         Me.txtDocumentoId.TabIndex = 3
@@ -139,7 +150,7 @@ Partial Class DocumentoInc
         Me.txtDescricaoDoc.Enabled = False
         Me.txtDescricaoDoc.Location = New System.Drawing.Point(207, 16)
         Me.txtDescricaoDoc.Name = "txtDescricaoDoc"
-        Me.txtDescricaoDoc.Size = New System.Drawing.Size(379, 20)
+        Me.txtDescricaoDoc.Size = New System.Drawing.Size(344, 20)
         Me.txtDescricaoDoc.TabIndex = 2
         '
         'cbTipo
@@ -268,11 +279,22 @@ Partial Class DocumentoInc
         Me.lvArtigos.TabIndex = 10
         Me.lvArtigos.UseCompatibleStateImageBehavior = False
         '
+        'btnRelatorio
+        '
+        Me.btnRelatorio.Enabled = False
+        Me.btnRelatorio.Location = New System.Drawing.Point(794, 21)
+        Me.btnRelatorio.Name = "btnRelatorio"
+        Me.btnRelatorio.Size = New System.Drawing.Size(150, 23)
+        Me.btnRelatorio.TabIndex = 11
+        Me.btnRelatorio.Text = "Exibir Relatório"
+        Me.btnRelatorio.UseVisualStyleBackColor = True
+        '
         'DocumentoInc
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(956, 517)
+        Me.Controls.Add(Me.btnRelatorio)
         Me.Controls.Add(Me.lvArtigos)
         Me.Controls.Add(Me.butBaixo)
         Me.Controls.Add(Me.butCima)
@@ -316,4 +338,6 @@ Partial Class DocumentoInc
     Friend WithEvents butBaixo As System.Windows.Forms.Button
     Friend WithEvents lvArtigos As System.Windows.Forms.ListView
     Friend WithEvents cbCliente As System.Windows.Forms.ComboBox
+    Friend WithEvents btnFiltro As System.Windows.Forms.Button
+    Friend WithEvents btnRelatorio As System.Windows.Forms.Button
 End Class
